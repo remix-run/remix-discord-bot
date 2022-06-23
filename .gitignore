@@ -1,0 +1,12 @@
+node_modules
+
+/build
+/public/build
+.env.local
+
+/prisma/data.db
+/prisma/data.db-journal
+
+/app/styles/tailwind.css
+
+/bot/src/playground.ts
