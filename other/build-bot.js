@@ -29,7 +29,7 @@ console.log();
 console.log("building...");
 
 fsExtra.removeSync(here("../bot/dist"));
-fsExtra.ensureDir(here("../bot/dist"));
+fsExtra.ensureDirSync(here("../bot/dist"));
 fsExtra.writeFileSync(here("../bot/dist/package.json"), '{"type": "module"}');
 
 require("esbuild")

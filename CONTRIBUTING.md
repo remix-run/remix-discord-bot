@@ -11,3 +11,7 @@ Check the `.env.example` for the values you need to set in a local `.env` file.
 ## Playground
 
 Sometimes it's easier to just run the bot with specific bits of code to test things out. That's what the playground file is for. The `bot/src/playground.ts` file is gitignored so you can change that to whatever you want. To run it, run `npm run play:bot`.
+
+## Slash Commands
+
+Slash commands have to be registered before they can be used. You can register commands by adding them to and then running the `./other/deploy-commands.js` file.

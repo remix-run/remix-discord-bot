@@ -10,3 +10,4 @@ node_modules
 /app/styles/tailwind.css
 
 /bot/src/playground.ts
+/bot/dist
