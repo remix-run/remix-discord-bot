@@ -11,17 +11,12 @@ const { DISCORD_BOT_TOKEN, REMIX_GUILD_ID, DISCORD_APP_ID } = process.env;
 
 invariant(DISCORD_BOT_TOKEN, "DISCORD_BOT_TOKEN is required");
 invariant(REMIX_GUILD_ID, "REMIX_GUILD_ID is required");
+invariant(DISCORD_APP_ID, "DISCORD_APP_ID is required");
 
 const commands = [
   new SlashCommandBuilder()
-    .setName("ping")
-    .setDescription("Replies with pong!"),
-  new SlashCommandBuilder()
-    .setName("server")
-    .setDescription("Replies with server info!"),
-  new SlashCommandBuilder()
-    .setName("user")
-    .setDescription("Replies with user info!"),
+    .setName("info")
+    .setDescription("Replies with bot info."),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "9" }).setToken(DISCORD_BOT_TOKEN);
