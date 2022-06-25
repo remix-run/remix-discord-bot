@@ -26,7 +26,8 @@
   "eslintIgnore": [
     "/node_modules",
     "/build",
-    "/public/build"
+    "/public/build",
+    "/bot/dist"
   ],
   "dependencies": {
     "@discordjs/builders": "^0.15.0",
