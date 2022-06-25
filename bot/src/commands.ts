@@ -18,7 +18,7 @@ export function setup(client: Discord.Client) {
         embeds: [
           {
             title: "ℹ️ Bot info",
-            color: colors.base08,
+            color: colors.base0B,
             description: `Here's some info about the currently running bot:`,
             fields: [
               ...(commitInfo
