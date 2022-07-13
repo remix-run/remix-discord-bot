@@ -63,23 +63,41 @@ async function handleNewReaction(
           ? getMemberLink(reactingMember)
           : "https://example.com/unknown-reacting-member",
       },
-      description: `${reactingMember ?? "Unknown member"} added \`${
+      description: `${reactingMember ?? "Unknown member"} added ${emoji} (\`${
         emoji.name
-      }\` to ${message.member ?? "Unknown member"}'s message in ${
+      }\`) to ${message.member ?? "Unknown member"}'s message in ${
         message.channel
       }`,
       fields: [
-        { name: "Reacting Member ID", value: reactingMember.id },
-        { name: "Message Member ID", value: message.member?.id ?? "unknown" },
-        { name: "Channel", value: message.channel.toString() },
-        { name: "Bot reaction", value: emoji.name?.toString() ?? "unknown" },
-        { name: "Message link", value: getMessageLink(message) },
+        { name: "Reacting Member ID", value: reactingMember.id, inline: true },
+        {
+          name: "Message Member ID",
+          value: message.member?.id ?? "unknown",
+          inline: true,
+        },
+        { name: "Channel", value: message.channel.toString(), inline: true },
+        { name: "Message link", value: getMessageLink(message), inline: true },
       ],
     };
   });
 }
 
-export function setup(client: TDiscord.Client) {
+export async function setup(client: TDiscord.Client) {
+  const guildPartials = await client.guilds.fetch();
+  await Promise.all(
+    Array.from(guildPartials.values()).flatMap(async (guildPartial) => {
+      const guild = await guildPartial.fetch();
+      const channelPartials = await guild.channels.fetch();
+      return Promise.all(
+        Array.from(channelPartials.values()).map(async (channelPartial) => {
+          const channel = await channelPartial.fetch();
+          if (channel.isText()) {
+            await channel.messages.fetch({ limit: 30 });
+          }
+        })
+      );
+    })
+  );
   client.on("messageReactionAdd", (messageReaction, user) => {
     // eslint-disable-next-line no-void
     void handleNewReaction(messageReaction, user);

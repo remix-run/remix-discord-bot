@@ -11,3 +11,9 @@ export function getTalkToBotsChannel(guild: Discord.Guild) {
   if (channel?.type !== "GUILD_TEXT") return null;
   return channel;
 }
+
+export function getReportsChannel(guild: Discord.Guild) {
+  const channel = guild.channels.cache.get(process.env.CHANNEL_ID_REPORTS);
+  if (channel?.type !== "GUILD_TEXT") return null;
+  return channel;
+}
