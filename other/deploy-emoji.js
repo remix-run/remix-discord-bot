@@ -17,29 +17,19 @@ const rest = new REST({ version: "9" }).setToken(DISCORD_BOT_TOKEN);
 const here = (...p) => path.join(__dirname, ...p);
 
 async function go() {
-  const emojis = [
-    {
-      name: "bothelp",
-      image: `data:image/png;base64,${await fs.readFile(
-        here("./bothelp.png"),
-        "base64"
-      )}`,
-    },
-    {
-      name: "botreport",
-      image: `data:image/png;base64,${await fs.readFile(
-        here("./botreport.png"),
-        "base64"
-      )}`,
-    },
-    {
-      name: "botremixide",
-      image: `data:image/png;base64,${await fs.readFile(
-        here("./botremixide.png"),
-        "base64"
-      )}`,
-    },
-  ];
+  const emojiFiles = (await fs.readdir(here("bot-emoji"))).filter((file) =>
+    file.startsWith("bot")
+  );
+  const emojis = [];
+  for (const emojiFile of emojiFiles) {
+    const parsed = path.parse(emojiFile);
+    const base64 = await fs.readFile(here("bot-emoji", emojiFile), "base64");
+    const extension = parsed.ext.slice(1);
+    emojis.push({
+      name: parsed.name,
+      image: `data:image/${extension};base64,${base64}`,
+    });
+  }
   const list = await rest.get(Routes.guildEmojis(REMIX_GUILD_ID));
 
   for (const emoji of emojis) {
