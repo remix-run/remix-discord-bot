@@ -19,6 +19,7 @@ const reactions: Record<string, ReactionFn> = {
 } as const;
 
 async function help(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
   const guild = messageReaction.message.guild;
   if (!guild) return;
   const helpRequester = messageReaction.users.cache.first();
@@ -52,11 +53,11 @@ async function help(messageReaction: TDiscord.MessageReaction) {
       },
     ],
   });
-  await messageReaction.remove();
 }
 help.description = "Lists available bot reactions";
 
 async function report(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
   const guild = messageReaction.message.guild;
   if (!guild) {
     console.error("could not find message reaction guild");
@@ -81,7 +82,20 @@ async function report(messageReaction: TDiscord.MessageReaction) {
     return;
   }
 
-  await reportsChannel.send({
+  const moderatorsRole =
+    (await guild.roles.fetch(process.env.ROLE_ID_MODERATORS)) ?? "Moderators";
+
+  const reportThread = await reportsChannel.threads.create({
+    name: `🚨 Report on ${offender.username}`,
+    autoArchiveDuration: "MAX",
+    invitable: true,
+    type: "GUILD_PUBLIC_THREAD",
+  });
+
+  await reportThread.send(
+    `Hey ${moderatorsRole}. We need your attention on this report.`
+  );
+  await reportThread.send({
     embeds: [
       {
         title: "🚨 User Report",
@@ -115,18 +129,16 @@ async function report(messageReaction: TDiscord.MessageReaction) {
       },
     ],
   });
-  await messageReaction.remove();
 }
 report.description = "Reports a message to the server moderators to look at.";
 
 async function remixide(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
   messageReaction.message.reply(
     `
 Hello 👋 I think you may be in the wrong place. This discord server is all about the Remix Web Framework which you can learn about at <https://remix.run>. You may have mixed this up with the Remix IDE (<https://remix-project.org/>) which is a completely different project. If that's the case, please delete your message. If not, can you please clarify? Thanks!
     `.trim()
   );
-
-  await messageReaction.remove();
 }
 remixide.description =
   "Replies to the message explaining that this is not the Remix IDE discord server.";

@@ -12,6 +12,7 @@ const requiredEnvs = [
   "CHANNEL_ID_BOT_LOGS",
   "CHANNEL_ID_TALK_TO_BOTS",
   "CHANNEL_ID_REPORTS",
+  "ROLE_ID_MODERATORS",
 ];
 for (const env of requiredEnvs) {
   invariant(process.env[env], `${env} is required`);
@@ -26,6 +27,7 @@ declare global {
       CHANNEL_ID_BOT_LOGS: string;
       CHANNEL_ID_TALK_TO_BOTS: string;
       CHANNEL_ID_REPORTS: string;
+      ROLE_ID_MODERATORS: string;
     }
   }
 }
