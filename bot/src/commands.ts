@@ -12,29 +12,64 @@ export function setup(client: Discord.Client) {
 
     const { commandName } = interaction;
 
-    if (commandName === "info") {
-      const commitInfo = getCommitInfo();
-      await interaction.reply({
-        embeds: [
-          {
-            title: "ℹ️ Bot info",
-            color: colors.base0B,
-            description: `Here's some info about the currently running bot:`,
-            fields: [
-              ...(commitInfo
-                ? [
-                    { name: "Commit Author", value: commitInfo.author },
-                    { name: "Commit Date", value: commitInfo.date },
-                    { name: "Commit Message", value: commitInfo.message },
-                    { name: "Commit Link", value: commitInfo.link },
-                  ]
-                : [{ name: "Commit Info", value: "Unavailable" }]),
-              { name: "Started at", value: getStartTimeInfo() },
-              { name: "Built at", value: getBuildTimeInfo() },
-            ],
-          },
-        ],
-      });
+    switch (commandName) {
+      case "info": {
+        const commitInfo = getCommitInfo();
+        await interaction.reply({
+          embeds: [
+            {
+              title: "ℹ️ Bot info",
+              color: colors.base0B,
+              description: `Here's some info about the currently running bot:`,
+              fields: [
+                ...(commitInfo
+                  ? [
+                      { name: "Commit Author", value: commitInfo.author },
+                      { name: "Commit Date", value: commitInfo.date },
+                      { name: "Commit Message", value: commitInfo.message },
+                      { name: "Commit Link", value: commitInfo.link },
+                    ]
+                  : [{ name: "Commit Info", value: "Unavailable" }]),
+                { name: "Started at", value: getStartTimeInfo() },
+                { name: "Built at", value: getBuildTimeInfo() },
+              ],
+            },
+          ],
+        });
+        break;
+      }
+      case "help": {
+        interaction.reply({
+          embeds: [
+            {
+              title: "💁 Bot Help",
+              color: colors.base0E,
+              description: `Here's some handy things you can do with the bot:`,
+              fields: [
+                {
+                  name: "/help",
+                  value:
+                    "This is the command you used to get this message printed out.",
+                },
+                {
+                  name: "/info",
+                  value:
+                    "Use the `/info` command to get info about the running bot.",
+                },
+                {
+                  name: "Bot Reaction emoji",
+                  value: `We have a handful of \`:bot\`-prefixed emoji which you can use to do various things. Reply to any message with \`:bothelp:\` and I'll tell you more`,
+                },
+              ],
+            },
+          ],
+        });
+        break;
+      }
+      default: {
+        console.error(`unknown command "${commandName}"`);
+        break;
+      }
     }
   });
 }

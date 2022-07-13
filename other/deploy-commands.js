@@ -16,7 +16,10 @@ invariant(DISCORD_APP_ID, "DISCORD_APP_ID is required");
 const commands = [
   new SlashCommandBuilder()
     .setName("info")
-    .setDescription("Replies with bot info."),
+    .setDescription("Replies with remix bot info."),
+  new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("Replies with remix bot help."),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "9" }).setToken(DISCORD_BOT_TOKEN);
