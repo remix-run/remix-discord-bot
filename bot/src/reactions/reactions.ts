@@ -16,6 +16,7 @@ const reactions: Record<string, ReactionFn> = {
   bothelp: help,
   botreport: report,
   botremixide: remixide,
+  botremixmusic: remixmusic,
 } as const;
 
 async function help(messageReaction: TDiscord.MessageReaction) {
@@ -142,5 +143,15 @@ Hello 👋 I think you may be in the wrong place. This discord server is all abo
 }
 remixide.description =
   "Replies to the message explaining that this is not the Remix IDE discord server.";
+
+async function remixmusic(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
+  messageReaction.message.reply(
+    `
+Hello 👋 I think you may be in the wrong place. This discord server is all about the Remix Web Framework which you can learn about at <https://remix.run>. You may have mixed this up with the idea of a "Musical Remix" which is cool, but not what this place is for. If that's the case, please delete your message. If not, can you please clarify? Thanks!
+    `.trim()
+  );
+}
+remixmusic.description = `Replies to the message explaining that this is not a "Remix Music" discord server.`;
 
 export default reactions;
