@@ -17,6 +17,7 @@ const reactions: Record<string, ReactionFn> = {
   botreport: report,
   botremixide: remixide,
   botremixmusic: remixmusic,
+  botreportresume: reportresume,
 } as const;
 
 async function help(messageReaction: TDiscord.MessageReaction) {
@@ -153,5 +154,15 @@ Hello 👋 I think you may be in the wrong place. This discord server is all abo
   );
 }
 remixmusic.description = `Replies to the message explaining that this is not a "Remix Music" discord server.`;
+
+async function reportresume(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
+  messageReaction.message.reply(
+    `
+Hello 👋 This channel is for employers to post open job opportunities for Remix developers, not for job seekers to post their resume. Thanks!
+    `.trim()
+  );
+}
+reportresume.description = `Replies to the message explaining that this channel is not for posting your resume, but for employers post open Remix opportunities.`;
 
 export default reactions;
