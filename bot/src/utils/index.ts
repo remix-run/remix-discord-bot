@@ -1,6 +1,6 @@
 import type * as TDiscord from "discord.js";
 import { HTTPError } from "discord.js";
-import { getBotLogChannel } from "./channels";
+import { getBotLogChannel, getTalkToBotsChannel } from "./channels";
 import { setIntervalAsync } from "set-interval-async/dynamic";
 
 export const getMessageLink = (
@@ -66,7 +66,7 @@ export function botLog(
 }
 
 // read up on dynamic setIntervalAsync here: https://github.com/ealmansi/set-interval-async#dynamic-and-fixed-setintervalasync
-function cleanupGuildOnInterval(
+export function cleanupGuildOnInterval(
   client: TDiscord.Client,
   cb: (client: TDiscord.Guild) => Promise<unknown>,
   interval: number
@@ -107,6 +107,79 @@ async function hasReactionFromUser(
   if (!reaction) return false;
   const usersWhoReacted = await reaction.users.fetch();
   return usersWhoReacted.some((user) => user.id === host.id);
+}
+
+export async function sendBotMessageReply(
+  msg: TDiscord.Message,
+  reply: string
+) {
+  const { guild, channel } = msg;
+  if (!guild) return;
+
+  const botsChannel = getTalkToBotsChannel(guild);
+  if (!botsChannel) return;
+
+  if (botsChannel.id === channel.id) {
+    // if they sent this from the bot's channel then we'll just send the reply
+    return botsChannel.send(reply);
+  } else {
+    // otherwise, we'll send the reply in the bots channel and let them know
+    // where they can get the reply.
+    const botMsg = await botsChannel.send(
+      `
+_Replying to ${msg.author} <${getMessageLink(msg)}>_
+
+${reply}
+      `.trim()
+    );
+    if (channel.isText()) {
+      return sendSelfDestructMessage(
+        channel,
+        `Hey ${msg.author}, I sent you a message here: ${getMessageLink(
+          botMsg
+        )}`,
+        { time: 7, units: "seconds" }
+      );
+    }
+  }
+}
+const timeToMs = {
+  seconds: (t: number) => t * 1000,
+  minutes: (t: number) => t * 1000 * 60,
+  hours: (t: number) => t * 1000 * 60 * 60,
+  days: (t: number) => t * 1000 * 60 * 60 * 24,
+  weeks: (t: number) => t * 1000 * 60 * 60 * 24 * 7,
+};
+
+export async function sendSelfDestructMessage(
+  channel: TDiscord.TextBasedChannel,
+  messageContent: string,
+  {
+    time = 10,
+    units = "seconds",
+  }: { time?: number; units?: keyof typeof timeToMs } = {}
+) {
+  return channel.send(
+    `
+${messageContent}
+_This message will self-destruct in about ${time} ${units}_
+    `.trim()
+  );
+}
+
+export function getSelfDestructTime(messageContent: string) {
+  const supportedUnits = Object.keys(timeToMs).join("|");
+  const regex = new RegExp(
+    `self-destruct in about (?<time>\\d+) (?<units>${supportedUnits})`,
+    "i"
+  );
+  const match = messageContent.match(regex);
+  if (!match) return null;
+  const { units, time } = match.groups as {
+    time: string;
+    units: keyof typeof timeToMs;
+  };
+  return timeToMs[units](Number(time));
 }
 
 export * from "./build-info";

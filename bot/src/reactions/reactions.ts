@@ -15,9 +15,11 @@ type ReactionFn = {
 const reactions: Record<string, ReactionFn> = {
   bothelp: help,
   botreport: report,
-  botremixide: remixide,
-  botremixmusic: remixmusic,
-  botreportresume: reportresume,
+  botremixide: remixIDE,
+  botremixmusic: remixMusic,
+  botreportresume: reportResume,
+  botask: ask,
+  botdoublemsg: doubleMessage,
 } as const;
 
 async function help(messageReaction: TDiscord.MessageReaction) {
@@ -134,7 +136,7 @@ async function report(messageReaction: TDiscord.MessageReaction) {
 }
 report.description = "Reports a message to the server moderators to look at.";
 
-async function remixide(messageReaction: TDiscord.MessageReaction) {
+async function remixIDE(messageReaction: TDiscord.MessageReaction) {
   void messageReaction.remove();
   messageReaction.message.reply(
     `
@@ -142,10 +144,10 @@ Hello 👋 I think you may be in the wrong place. This discord server is all abo
     `.trim()
   );
 }
-remixide.description =
+remixIDE.description =
   "Replies to the message explaining that this is not the Remix IDE discord server.";
 
-async function remixmusic(messageReaction: TDiscord.MessageReaction) {
+async function remixMusic(messageReaction: TDiscord.MessageReaction) {
   void messageReaction.remove();
   messageReaction.message.reply(
     `
@@ -153,9 +155,9 @@ Hello 👋 I think you may be in the wrong place. This discord server is all abo
     `.trim()
   );
 }
-remixmusic.description = `Replies to the message explaining that this is not a "Remix Music" discord server.`;
+remixMusic.description = `Replies to the message explaining that this is not a "Remix Music" discord server.`;
 
-async function reportresume(messageReaction: TDiscord.MessageReaction) {
+async function reportResume(messageReaction: TDiscord.MessageReaction) {
   void messageReaction.remove();
   messageReaction.message.reply(
     `
@@ -163,6 +165,22 @@ Hello 👋 This channel is for employers to post open job opportunities for Remi
     `.trim()
   );
 }
-reportresume.description = `Replies to the message explaining that this channel is not for posting your resume, but for employers post open Remix opportunities.`;
+reportResume.description = `Replies to the message explaining that this channel is not for posting your resume, but for employers post open Remix opportunities.`;
+
+async function ask(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
+  await messageReaction.message.reply(
+    `We appreciate your question and we'll do our best to help you when we can. Could you please give us more details? Please follow the guidelines in <https://rmx.as/ask> (especially the part about making a <https://rmx.as/repro>) and then we'll try to answer your question.`
+  );
+}
+ask.description = `Replies to the message asking for more details about a question.`;
+
+async function doubleMessage(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
+  await messageReaction.message.reply(
+    `Please avoid posting the same thing in multiple channels. Choose the best channel, and wait for a response there. Please delete the other message to avoid fragmenting the answers and causing confusion. Thanks!`
+  );
+}
+doubleMessage.description = `Replies to the message telling the user to avoid posting the same question in multiple channels.`;
 
 export default reactions;

@@ -7,4 +7,6 @@
 
 set -ex
 npx prisma migrate deploy
+node ./scripts/deploy-commands.js
+node ./scripts/deploy-emoji.js
 npm run start
