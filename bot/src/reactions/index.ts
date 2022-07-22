@@ -98,8 +98,20 @@ export async function setup(client: TDiscord.Client) {
       );
     })
   );
+
   client.on("messageReactionAdd", (messageReaction, user) => {
     // eslint-disable-next-line no-void
     void handleNewReaction(messageReaction, user);
+  });
+
+  client.on("messageDelete", async (msg) => {
+    const referencedMessage = msg.channel.messages.cache.find(
+      (m) =>
+        m.reference?.messageId === msg.id && m.author.id === client.user?.id
+    );
+
+    if (referencedMessage != null) {
+      await referencedMessage.delete();
+    }
   });
 }

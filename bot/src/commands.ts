@@ -24,11 +24,11 @@ export function setup(client: Discord.Client) {
               fields: [
                 ...(commitInfo
                   ? [
-                    { name: "Commit Author", value: commitInfo.author },
-                    { name: "Commit Date", value: commitInfo.date },
-                    { name: "Commit Message", value: commitInfo.message },
-                    { name: "Commit Link", value: commitInfo.link },
-                  ]
+                      { name: "Commit Author", value: commitInfo.author },
+                      { name: "Commit Date", value: commitInfo.date },
+                      { name: "Commit Message", value: commitInfo.message },
+                      { name: "Commit Link", value: commitInfo.link },
+                    ]
                   : [{ name: "Commit Info", value: "Unavailable" }]),
                 { name: "Started at", value: getStartTimeInfo() },
                 { name: "Built at", value: getBuildTimeInfo() },
@@ -72,12 +72,4 @@ export function setup(client: Discord.Client) {
       }
     }
   });
-
-  client.on("messageDelete", async (msg) => {
-    const referencedMessage = msg.channel.messages.cache.find(m => m.reference?.messageId === msg.id && m.author.id === client.user?.id);
-
-    if (referencedMessage != null) {
-      await referencedMessage.delete();
-    }
-  })
 }
