@@ -18,8 +18,8 @@ const reactions: Record<string, ReactionFn> = {
   botreportresume: reportResume,
   botremixide: remixIDE,
   botremixmusic: remixMusic,
-  botask: ask,
   botthread: thread,
+  botthreadask: ask,
   botdoublemsg: doubleMessage,
 } as const;
 
