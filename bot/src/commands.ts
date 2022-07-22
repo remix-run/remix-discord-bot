@@ -74,11 +74,12 @@ export function setup(client: Discord.Client) {
   });
 
   client.on("messageDelete", async (msg) => {
-    const hasReference = await msg.fetchReference();
-    // If there's a message reference and it's from the bot, delete
+    const referencedMessage = msg.channel.messages.cache.find(m => m.reference?.messageId === msg.id && m.author.id === client.user?.id);
+
+    // If there's a message reference and it's from the bot, delete the bot message
     // https://discord.js.org/#/docs/main/stable/class/Message?scrollTo=fetchReference
-    if (hasReference && hasReference.author.id == client.user?.id) {
-      await hasReference.delete();
+    if (referencedMessage != null) {
+      await referencedMessage.delete();
     }
   })
 }
