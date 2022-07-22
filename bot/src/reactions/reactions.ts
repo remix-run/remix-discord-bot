@@ -19,6 +19,7 @@ const reactions: Record<string, ReactionFn> = {
   botremixmusic: remixMusic,
   botreportresume: reportResume,
   botask: ask,
+  botthread: thread,
   botdoublemsg: doubleMessage,
 } as const;
 
@@ -169,11 +170,24 @@ reportResume.description = `Replies to the message explaining that this channel 
 
 async function ask(messageReaction: TDiscord.MessageReaction) {
   void messageReaction.remove();
-  await messageReaction.message.reply(
-    `We appreciate your question and we'll do our best to help you when we can. Could you please give us more details? Please follow the guidelines in <https://rmx.as/ask> (especially the part about making a <https://rmx.as/repro>) and then we'll try to answer your question.`
-  );
+  const reply = `Hi ${messageReaction.message.author} 👋\nWe appreciate your question and we'll do our best to help you when we can. Could you please give us more details? Please follow the guidelines in <https://rmx.as/ask> (especially the part about making a <https://rmx.as/repro>) and then we'll try to answer your question.`;
+  const { channel, author, guild, id } = messageReaction.message;
+  if (!guild || !channel || !author) return;
+
+  if (channel.type === "GUILD_TEXT") {
+    const thread = await channel.threads.create({
+      name: `🧵 Thread for ${author.username}`,
+      startMessage: id,
+    });
+    await thread.send(reply);
+    await thread.send(
+      "Feel free to change the thread title to something more descriptive if you like."
+    );
+  } else {
+    await messageReaction.message.reply(reply);
+  }
 }
-ask.description = `Replies to the message asking for more details about a question.`;
+ask.description = `Creates a thread for the message and asks for more details about a question. Useful if you know the question needs more details, but you can't commit to replying when they come.`;
 
 async function doubleMessage(messageReaction: TDiscord.MessageReaction) {
   void messageReaction.remove();
@@ -182,5 +196,22 @@ async function doubleMessage(messageReaction: TDiscord.MessageReaction) {
   );
 }
 doubleMessage.description = `Replies to the message telling the user to avoid posting the same question in multiple channels.`;
+
+async function thread(messageReaction: TDiscord.MessageReaction) {
+  void messageReaction.remove();
+  const { channel, author, guild, id } = messageReaction.message;
+  if (!guild || !channel || !author) return;
+
+  if (channel.type === "GUILD_TEXT") {
+    const thread = await channel.threads.create({
+      name: `🧵 Thread for ${author.username}`,
+      startMessage: id,
+    });
+    await thread.send(
+      `Hi ${author} 👋\nLet's discuss this further here. Feel free to change the thread title to something more descriptive if you like.`
+    );
+  }
+}
+thread.description = `Creates a thread for the message. Handy if you know the message needs a thread, but you can't commit to participating in the conversation so you don't want to be the one to create it.`;
 
 export default reactions;
