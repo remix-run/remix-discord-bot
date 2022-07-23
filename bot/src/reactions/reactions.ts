@@ -15,11 +15,11 @@ type ReactionFn = {
 const reactions: Record<string, ReactionFn> = {
   bothelp: help,
   botreport: report,
+  botreportresume: reportResume,
   botremixide: remixIDE,
   botremixmusic: remixMusic,
-  botreportresume: reportResume,
-  botask: ask,
   botthread: thread,
+  botthreadask: ask,
   botdoublemsg: doubleMessage,
 } as const;
 
