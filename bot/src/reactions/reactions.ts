@@ -1,4 +1,4 @@
-import type * as TDiscord from "discord.js";
+import * as TDiscord from "discord.js";
 import {
   colors,
   getMemberLink,
@@ -39,7 +39,7 @@ async function help(messageReaction: TDiscord.MessageReaction) {
     );
   }
   const guildEmojis = await guild.emojis.fetch();
-  const reactionFields: Array<TDiscord.EmbedFieldData> = [];
+  const reactionFields: Array<TDiscord.APIEmbedField> = [];
   for (const [reactionName, { description }] of Object.entries(reactions)) {
     const emoji = guildEmojis.find((emoji) => emoji.name === reactionName);
     reactionFields.push({
@@ -92,9 +92,9 @@ async function report(messageReaction: TDiscord.MessageReaction) {
 
   const reportThread = await reportsChannel.threads.create({
     name: `🚨 Report on ${offender.username}`,
-    autoArchiveDuration: "MAX",
+    autoArchiveDuration: TDiscord.ThreadAutoArchiveDuration.ThreeDays,
     invitable: true,
-    type: "GUILD_PUBLIC_THREAD",
+    type: TDiscord.ChannelType.GuildPublicThread,
   });
 
   await reportThread.send(
@@ -108,7 +108,7 @@ async function report(messageReaction: TDiscord.MessageReaction) {
         description: `A user has reported a message.`,
         author: {
           name: offender.username ?? "Unknown",
-          iconURL: offender.avatarURL() ?? offender.defaultAvatarURL,
+          icon_url: offender.avatarURL() ?? offender.defaultAvatarURL,
           url: getMemberLink(offender),
         },
         fields: [
@@ -174,7 +174,7 @@ async function ask(messageReaction: TDiscord.MessageReaction) {
   const { channel, author, guild, id } = messageReaction.message;
   if (!guild || !channel || !author) return;
 
-  if (channel.type === "GUILD_TEXT") {
+  if (channel.type === TDiscord.ChannelType.GuildText) {
     const thread = await channel.threads.create({
       name: `🧵 Thread for ${author.username}`,
       startMessage: id,
@@ -202,7 +202,7 @@ async function thread(messageReaction: TDiscord.MessageReaction) {
   const { channel, author, guild, id } = messageReaction.message;
   if (!guild || !channel || !author) return;
 
-  if (channel.type === "GUILD_TEXT") {
+  if (channel.type === TDiscord.ChannelType.GuildText) {
     const thread = await channel.threads.create({
       name: `🧵 Thread for ${author.username}`,
       startMessage: id,

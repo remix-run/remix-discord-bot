@@ -105,7 +105,7 @@ export async function setup(client: TDiscord.Client) {
   });
 
   client.on("messageDelete", async (msg) => {
-    let referencedMessage = [...msg.channel.messages.cache.values()].find(
+    const referencedMessage = [...msg.channel.messages.cache.values()].find(
       (m) =>
         m.reference?.messageId === msg.id && m.author.id === client.user?.id
     );

@@ -3,7 +3,7 @@ import { cleanupGuildOnInterval, getSelfDestructTime } from "./utils";
 
 async function cleanup(guild: TDiscord.Guild) {
   const channels = Array.from(guild.channels.cache.values()).filter((ch) =>
-    ch.isText()
+    ch.isTextBased()
   ) as Array<TDiscord.TextBasedChannel>;
   if (!guild.client.user) return;
 
@@ -11,7 +11,7 @@ async function cleanup(guild: TDiscord.Guild) {
   const promises = [];
 
   for (const channel of channels) {
-    for (const message of Array.from(channel.messages.cache.values())) {
+    for (const message of [...channel.messages.cache.values()]) {
       if (message.author.id === botId) {
         const timeToSelfDestruct = getSelfDestructTime(message.content);
         if (
@@ -34,7 +34,7 @@ async function setup(client: TDiscord.Client) {
   await Promise.all(
     Array.from(client.guilds.cache.values()).map(async (guild) => {
       const channels = Array.from(guild.channels.cache.values()).filter((ch) =>
-        ch.isText()
+        ch.isTextBased()
       ) as Array<TDiscord.TextBasedChannel>;
       return Promise.all(
         Array.from(channels.values()).map((channel) => {

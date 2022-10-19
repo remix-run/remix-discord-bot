@@ -18,12 +18,12 @@ async function dedupeMessages(message: TDiscord.Message) {
   if (!guild) return;
 
   if (message.author.id === message.client.user?.id) return; // ignore the bot
-  if (!message.channel.isText()) return; // ignore non-text channels
+  if (!message.channel.isTextBased()) return; // ignore non-text channels
   if (message.content.length < 50) return; // ignore short messages
   if (isLink(message.content)) return; // ignore links, gifs/blog posts/etc.
 
   const channels = Array.from(
-    guild.channels.cache.filter((ch) => ch.isText()).values()
+    guild.channels.cache.filter((ch) => ch.isTextBased()).values()
   ) as Array<TDiscord.TextBasedChannel>;
 
   function msgFilter(msg: TDiscord.Message) {
@@ -39,9 +39,7 @@ async function dedupeMessages(message: TDiscord.Message) {
 
   let duplicateMessage;
   for (const channel of channels) {
-    duplicateMessage = Array.from(channel.messages.cache.values()).find(
-      msgFilter
-    );
+    duplicateMessage = [...channel.messages.cache.values()].find(msgFilter);
     if (duplicateMessage) break;
   }
 
@@ -65,7 +63,7 @@ function setup(client: TDiscord.Client) {
   const guild = client.guilds.cache.find(({ name }) => name === "KCD");
   if (!guild) return;
   const channels = Array.from(
-    guild.channels.cache.filter((ch) => ch.isText()).values()
+    guild.channels.cache.filter((ch) => ch.isTextBased()).values()
   ) as Array<TDiscord.TextBasedChannel>;
   for (const channel of channels) {
     // ignore the returned promise. Fire and forget.

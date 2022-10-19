@@ -1,4 +1,4 @@
-import type * as TDiscord from "discord.js";
+import * as TDiscord from "discord.js";
 import { HTTPError } from "discord.js";
 import { getBotLogChannel, getTalkToBotsChannel } from "./channels";
 import { setIntervalAsync } from "set-interval-async/dynamic";
@@ -27,12 +27,12 @@ function getErrorMessage(error: unknown) {
 
 export function botLog(
   guild: TDiscord.Guild,
-  messageFn: () => string | TDiscord.MessageEmbedOptions | undefined
+  messageFn: () => string | TDiscord.APIEmbed | undefined
 ) {
   const botsChannel = getBotLogChannel(guild);
   if (!botsChannel) return;
 
-  let message: TDiscord.MessageOptions;
+  let message: TDiscord.BaseMessageOptions;
   try {
     const result = messageFn();
     if (!result) return;
@@ -53,10 +53,11 @@ export function botLog(
   return Promise.resolve()
     .then(() => botsChannel.send(message))
     .catch((error: unknown) => {
-      const messageSummary =
-        message.content ??
-        message.embeds?.[0]?.title ??
-        message.embeds?.[0]?.description;
+      let messageSummary: string | null | undefined = message.content;
+      if (!messageSummary && message.embeds?.[0] instanceof TDiscord.Embed) {
+        messageSummary =
+          message.embeds[0].title ?? message.embeds[0].description;
+      }
       console.error(
         `Unable to log message: "${messageSummary}"`,
         getErrorStack(error),
@@ -132,7 +133,7 @@ _Replying to ${msg.author} <${getMessageLink(msg)}>_
 ${reply}
       `.trim()
     );
-    if (channel.isText()) {
+    if (channel.isTextBased()) {
       return sendSelfDestructMessage(
         channel,
         `Hey ${msg.author}, I sent you a message here: ${getMessageLink(
