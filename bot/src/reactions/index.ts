@@ -1,4 +1,4 @@
-import type * as TDiscord from "discord.js";
+import * as TDiscord from "discord.js";
 import reactions from "./reactions";
 import { botLog, colors, getMemberLink, getMessageLink } from "./utils";
 
@@ -85,14 +85,20 @@ async function handleNewReaction(
 export async function setup(client: TDiscord.Client) {
   const guildPartials = await client.guilds.fetch();
   await Promise.all(
-    Array.from(guildPartials.values()).flatMap(async (guildPartial) => {
+    guildPartials.mapValues(async (guildPartial) => {
       const guild = await guildPartial.fetch();
       const channelPartials = await guild.channels.fetch();
       return Promise.all(
-        Array.from(channelPartials.values()).map(async (channelPartial) => {
-          const channel = await channelPartial?.fetch();
-          if (channel?.isTextBased()) {
+        channelPartials.mapValues(async (channelPartial) => {
+          if (channelPartial?.isTextBased()) {
+            const channel = await channelPartial.fetch();
             await channel.messages.fetch({ limit: 30 });
+            if (channel.type === TDiscord.ChannelType.GuildText) {
+              const results = await channel.threads.fetch();
+              for (const [, thread] of results.threads) {
+                await thread.messages.fetch({ limit: 30 });
+              }
+            }
           }
         })
       );
