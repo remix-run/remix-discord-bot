@@ -90,8 +90,8 @@ export async function setup(client: TDiscord.Client) {
       const channelPartials = await guild.channels.fetch();
       return Promise.all(
         Array.from(channelPartials.values()).map(async (channelPartial) => {
-          const channel = await channelPartial.fetch();
-          if (channel.isText()) {
+          const channel = await channelPartial?.fetch();
+          if (channel?.isTextBased()) {
             await channel.messages.fetch({ limit: 30 });
           }
         })
@@ -105,7 +105,7 @@ export async function setup(client: TDiscord.Client) {
   });
 
   client.on("messageDelete", async (msg) => {
-    const referencedMessage = msg.channel.messages.cache.find(
+    let referencedMessage = [...msg.channel.messages.cache.values()].find(
       (m) =>
         m.reference?.messageId === msg.id && m.author.id === client.user?.id
     );
