@@ -5,14 +5,17 @@
 import path from "path";
 import * as Discord from "discord.js";
 import dotenv from "dotenv";
-import invariant from "tiny-invariant";
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const { DISCORD_BOT_TOKEN, REMIX_GUILD_ID } = process.env;
 
-invariant(DISCORD_BOT_TOKEN, "DISCORD_BOT_TOKEN is required");
-invariant(REMIX_GUILD_ID, "REMIX_GUILD_ID is required");
+if (!DISCORD_BOT_TOKEN) {
+  throw new Error("DISCORD_BOT_TOKEN is required");
+}
+if (!REMIX_GUILD_ID) {
+  throw new Error("REMIX_GUILD_ID is required");
+}
 
 const client = new Discord.Client({
   intents: [

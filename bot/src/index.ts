@@ -1,6 +1,5 @@
 import path from "path";
 import dotenv from "dotenv";
-import invariant from "tiny-invariant";
 import { start } from "./start";
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
@@ -15,7 +14,9 @@ const requiredEnvs = [
   "ROLE_ID_MODERATORS",
 ];
 for (const env of requiredEnvs) {
-  invariant(process.env[env], `${env} is required`);
+  if (!process.env[env]) {
+    throw new Error(`${env} is required`);
+  }
 }
 
 declare global {
