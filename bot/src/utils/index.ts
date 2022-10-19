@@ -1,16 +1,14 @@
-import * as TDiscord from "discord.js";
+import * as Discord from "discord.js";
 import { HTTPError } from "discord.js";
 import { getBotLogChannel, getTalkToBotsChannel } from "./channels";
 import { setIntervalAsync } from "set-interval-async/dynamic";
 
-export const getMessageLink = (
-  msg: TDiscord.Message | TDiscord.PartialMessage
-) =>
+export const getMessageLink = (msg: Discord.Message | Discord.PartialMessage) =>
   `https://discordapp.com/channels/${msg.guild?.id ?? "@me"}/${
     msg.channel.id
   }/${msg.id}`;
 
-export const getMemberLink = (member: TDiscord.GuildMember | TDiscord.User) =>
+export const getMemberLink = (member: Discord.GuildMember | Discord.User) =>
   `https://discord.com/users/${member.id}`;
 
 function getErrorStack(error: unknown) {
@@ -26,13 +24,13 @@ function getErrorMessage(error: unknown) {
 }
 
 export function botLog(
-  guild: TDiscord.Guild,
-  messageFn: () => string | TDiscord.APIEmbed | undefined
+  guild: Discord.Guild,
+  messageFn: () => string | Discord.APIEmbed | undefined
 ) {
   const botsChannel = getBotLogChannel(guild);
   if (!botsChannel) return;
 
-  let message: TDiscord.BaseMessageOptions;
+  let message: Discord.BaseMessageOptions;
   try {
     const result = messageFn();
     if (!result) return;
@@ -54,7 +52,7 @@ export function botLog(
     .then(() => botsChannel.send(message))
     .catch((error: unknown) => {
       let messageSummary: string | null | undefined = message.content;
-      if (!messageSummary && message.embeds?.[0] instanceof TDiscord.Embed) {
+      if (!messageSummary && message.embeds?.[0] instanceof Discord.Embed) {
         messageSummary =
           message.embeds[0].title ?? message.embeds[0].description;
       }
@@ -68,8 +66,8 @@ export function botLog(
 
 // read up on dynamic setIntervalAsync here: https://github.com/ealmansi/set-interval-async#dynamic-and-fixed-setintervalasync
 export function cleanupGuildOnInterval(
-  client: TDiscord.Client,
-  cb: (client: TDiscord.Guild) => Promise<unknown>,
+  client: Discord.Client,
+  cb: (client: Discord.Guild) => Promise<unknown>,
   interval: number
 ) {
   setIntervalAsync(async () => {
@@ -100,8 +98,8 @@ function typedBoolean<T>(
 }
 
 async function hasReactionFromUser(
-  message: TDiscord.Message,
-  host: TDiscord.GuildMember,
+  message: Discord.Message,
+  host: Discord.GuildMember,
   emoji: string
 ) {
   const reaction = message.reactions.cache.get(emoji);
@@ -110,10 +108,7 @@ async function hasReactionFromUser(
   return usersWhoReacted.some((user) => user.id === host.id);
 }
 
-export async function sendBotMessageReply(
-  msg: TDiscord.Message,
-  reply: string
-) {
+export async function sendBotMessageReply(msg: Discord.Message, reply: string) {
   const { guild, channel } = msg;
   if (!guild) return;
 
@@ -153,7 +148,7 @@ const timeToMs = {
 };
 
 export async function sendSelfDestructMessage(
-  channel: TDiscord.TextBasedChannel,
+  channel: Discord.TextBasedChannel,
   messageContent: string,
   {
     time = 10,

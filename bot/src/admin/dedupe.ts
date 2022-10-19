@@ -1,4 +1,4 @@
-import type * as TDiscord from "discord.js";
+import type * as Discord from "discord.js";
 import { getMessageLink, sendBotMessageReply } from "./utils";
 
 const sixHours = 1000 * 60 * 60 * 6;
@@ -13,7 +13,7 @@ function isLink(text: string) {
   }
 }
 
-async function dedupeMessages(message: TDiscord.Message) {
+async function dedupeMessages(message: Discord.Message) {
   const { guild } = message;
   if (!guild) return;
 
@@ -24,9 +24,9 @@ async function dedupeMessages(message: TDiscord.Message) {
 
   const channels = Array.from(
     guild.channels.cache.filter((ch) => ch.isTextBased()).values()
-  ) as Array<TDiscord.TextBasedChannel>;
+  ) as Array<Discord.TextBasedChannel>;
 
-  function msgFilter(msg: TDiscord.Message) {
+  function msgFilter(msg: Discord.Message) {
     return (
       msg.id !== message.id && // not the EXACT same message
       msg.author.id !== msg.client.user?.id && // not from the bot
@@ -58,13 +58,13 @@ If you think your message is better suited in another channel please delete the 
   }
 }
 
-function setup(client: TDiscord.Client) {
+function setup(client: Discord.Client) {
   // prime the message cache for relevant channels
   const guild = client.guilds.cache.find(({ name }) => name === "KCD");
   if (!guild) return;
   const channels = Array.from(
     guild.channels.cache.filter((ch) => ch.isTextBased()).values()
-  ) as Array<TDiscord.TextBasedChannel>;
+  ) as Array<Discord.TextBasedChannel>;
   for (const channel of channels) {
     // ignore the returned promise. Fire and forget.
     void channel.messages.fetch({ limit: 30 });

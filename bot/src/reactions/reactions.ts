@@ -1,4 +1,4 @@
-import * as TDiscord from "discord.js";
+import * as Discord from "discord.js";
 import {
   colors,
   getMemberLink,
@@ -8,7 +8,7 @@ import {
 } from "../utils";
 
 type ReactionFn = {
-  (message: TDiscord.MessageReaction): Promise<unknown>;
+  (message: Discord.MessageReaction): Promise<unknown>;
   description?: string;
 };
 
@@ -23,7 +23,7 @@ const reactions: Record<string, ReactionFn> = {
   botdoublemsg: doubleMessage,
 } as const;
 
-async function help(messageReaction: TDiscord.MessageReaction) {
+async function help(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   const guild = messageReaction.message.guild;
   if (!guild) return;
@@ -39,7 +39,7 @@ async function help(messageReaction: TDiscord.MessageReaction) {
     );
   }
   const guildEmojis = await guild.emojis.fetch();
-  const reactionFields: Array<TDiscord.APIEmbedField> = [];
+  const reactionFields: Array<Discord.APIEmbedField> = [];
   for (const [reactionName, { description }] of Object.entries(reactions)) {
     const emoji = guildEmojis.find((emoji) => emoji.name === reactionName);
     reactionFields.push({
@@ -61,7 +61,7 @@ async function help(messageReaction: TDiscord.MessageReaction) {
 }
 help.description = "Lists available bot reactions";
 
-async function report(messageReaction: TDiscord.MessageReaction) {
+async function report(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   const guild = messageReaction.message.guild;
   if (!guild) {
@@ -92,9 +92,9 @@ async function report(messageReaction: TDiscord.MessageReaction) {
 
   const reportThread = await reportsChannel.threads.create({
     name: `🚨 Report on ${offender.username}`,
-    autoArchiveDuration: TDiscord.ThreadAutoArchiveDuration.ThreeDays,
+    autoArchiveDuration: Discord.ThreadAutoArchiveDuration.ThreeDays,
     invitable: true,
-    type: TDiscord.ChannelType.GuildPublicThread,
+    type: Discord.ChannelType.GuildPublicThread,
   });
 
   await reportThread.send(
@@ -137,7 +137,7 @@ async function report(messageReaction: TDiscord.MessageReaction) {
 }
 report.description = "Reports a message to the server moderators to look at.";
 
-async function remixIDE(messageReaction: TDiscord.MessageReaction) {
+async function remixIDE(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   messageReaction.message.reply(
     `
@@ -148,7 +148,7 @@ Hello 👋 I think you may be in the wrong place. This discord server is all abo
 remixIDE.description =
   "Replies to the message explaining that this is not the Remix IDE discord server.";
 
-async function remixMusic(messageReaction: TDiscord.MessageReaction) {
+async function remixMusic(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   messageReaction.message.reply(
     `
@@ -158,7 +158,7 @@ Hello 👋 I think you may be in the wrong place. This discord server is all abo
 }
 remixMusic.description = `Replies to the message explaining that this is not a "Remix Music" discord server.`;
 
-async function reportResume(messageReaction: TDiscord.MessageReaction) {
+async function reportResume(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   messageReaction.message.reply(
     `
@@ -168,13 +168,13 @@ Hello 👋 This channel is for employers to post open job opportunities for Remi
 }
 reportResume.description = `Replies to the message explaining that this channel is not for posting your resume, but for employers post open Remix opportunities.`;
 
-async function ask(messageReaction: TDiscord.MessageReaction) {
+async function ask(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   const reply = `Hi ${messageReaction.message.author} 👋\nWe appreciate your question and we'll do our best to help you when we can. Could you please give us more details? Please follow the guidelines in <https://rmx.as/ask> (especially the part about making a <https://rmx.as/repro>) and then we'll try to answer your question.`;
   const { channel, author, guild, id } = messageReaction.message;
   if (!guild || !channel || !author) return;
 
-  if (channel.type === TDiscord.ChannelType.GuildText) {
+  if (channel.type === Discord.ChannelType.GuildText) {
     const thread = await channel.threads.create({
       name: `🧵 Thread for ${author.username}`,
       startMessage: id,
@@ -189,7 +189,7 @@ async function ask(messageReaction: TDiscord.MessageReaction) {
 }
 ask.description = `Creates a thread for the message and asks for more details about a question. Useful if you know the question needs more details, but you can't commit to replying when they come.`;
 
-async function doubleMessage(messageReaction: TDiscord.MessageReaction) {
+async function doubleMessage(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   await messageReaction.message.reply(
     `Please avoid posting the same thing in multiple channels. Choose the best channel, and wait for a response there. Please delete the other message to avoid fragmenting the answers and causing confusion. Thanks!`
@@ -197,12 +197,12 @@ async function doubleMessage(messageReaction: TDiscord.MessageReaction) {
 }
 doubleMessage.description = `Replies to the message telling the user to avoid posting the same question in multiple channels.`;
 
-async function thread(messageReaction: TDiscord.MessageReaction) {
+async function thread(messageReaction: Discord.MessageReaction) {
   void messageReaction.remove();
   const { channel, author, guild, id } = messageReaction.message;
   if (!guild || !channel || !author) return;
 
-  if (channel.type === TDiscord.ChannelType.GuildText) {
+  if (channel.type === Discord.ChannelType.GuildText) {
     const thread = await channel.threads.create({
       name: `🧵 Thread for ${author.username}`,
       startMessage: id,

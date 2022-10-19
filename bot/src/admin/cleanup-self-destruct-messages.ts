@@ -1,10 +1,10 @@
-import type * as TDiscord from "discord.js";
+import type * as Discord from "discord.js";
 import { cleanupGuildOnInterval, getSelfDestructTime } from "./utils";
 
-async function cleanup(guild: TDiscord.Guild) {
+async function cleanup(guild: Discord.Guild) {
   const channels = Array.from(guild.channels.cache.values()).filter((ch) =>
     ch.isTextBased()
-  ) as Array<TDiscord.TextBasedChannel>;
+  ) as Array<Discord.TextBasedChannel>;
   if (!guild.client.user) return;
 
   const botId = guild.client.user.id;
@@ -27,7 +27,7 @@ async function cleanup(guild: TDiscord.Guild) {
   return Promise.all(promises);
 }
 
-async function setup(client: TDiscord.Client) {
+async function setup(client: Discord.Client) {
   // prime the message cache for all channels
   // this is important for situations when the bot gets restarted after
   // it had just sent a self-destruct chat
@@ -35,7 +35,7 @@ async function setup(client: TDiscord.Client) {
     Array.from(client.guilds.cache.values()).map(async (guild) => {
       const channels = Array.from(guild.channels.cache.values()).filter((ch) =>
         ch.isTextBased()
-      ) as Array<TDiscord.TextBasedChannel>;
+      ) as Array<Discord.TextBasedChannel>;
       return Promise.all(
         Array.from(channels.values()).map((channel) => {
           return channel.messages.fetch({ limit: 30 });

@@ -1,14 +1,14 @@
-import * as TDiscord from "discord.js";
+import type * as Discord from "discord.js";
 import reactions from "./reactions";
 import { botLog, colors, getMemberLink, getMessageLink } from "./utils";
 
 async function handleNewReaction(
-  messageReaction: TDiscord.MessageReaction | TDiscord.PartialMessageReaction,
-  reactingUser: TDiscord.User | TDiscord.PartialUser
+  messageReaction: Discord.MessageReaction | Discord.PartialMessageReaction,
+  reactingUser: Discord.User | Discord.PartialUser
 ) {
   if (messageReaction.partial) {
     try {
-      await messageReaction.fetch();
+      messageReaction = await messageReaction.fetch();
     } catch (error: unknown) {
       console.error(
         "Something went wrong when fetching the message reaction: ",
@@ -38,10 +38,6 @@ async function handleNewReaction(
 
   const reactionFn = reactions[emoji.name];
   if (!reactionFn) return;
-
-  if (messageReaction.partial) {
-    messageReaction = await messageReaction.fetch();
-  }
 
   await reactionFn(messageReaction);
 
@@ -82,31 +78,8 @@ async function handleNewReaction(
   });
 }
 
-export async function setup(client: TDiscord.Client) {
-  const guildPartials = await client.guilds.fetch();
-  await Promise.all(
-    guildPartials.mapValues(async (guildPartial) => {
-      const guild = await guildPartial.fetch();
-      const channelPartials = await guild.channels.fetch();
-      return Promise.all(
-        channelPartials.mapValues(async (channelPartial) => {
-          if (channelPartial?.isTextBased()) {
-            const channel = await channelPartial.fetch();
-            await channel.messages.fetch({ limit: 30 });
-            if (channel.type === TDiscord.ChannelType.GuildText) {
-              const results = await channel.threads.fetch();
-              for (const [, thread] of results.threads) {
-                await thread.messages.fetch({ limit: 30 });
-              }
-            }
-          }
-        })
-      );
-    })
-  );
-
+export async function setup(client: Discord.Client) {
   client.on("messageReactionAdd", (messageReaction, user) => {
-    // eslint-disable-next-line no-void
     void handleNewReaction(messageReaction, user);
   });
 
