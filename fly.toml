@@ -6,6 +6,10 @@ kill_timeout = 10
 [env]
 PORT = "8080"
 
+[mounts]
+source = "data"
+destination = "/data"
+
 [[services]]
 internal_port = 8080
 protocol = "tcp"
