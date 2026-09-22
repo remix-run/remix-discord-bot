@@ -1,13 +1,5 @@
-node_modules
-
-/build
-/public/build
+node_modules/
 .env
-
-/prisma/data.db
-/prisma/data.db-journal
-
-/app/styles/tailwind.css
-
-/bot/src/playground.ts
-/bot/dist
+.coverage/
+*.log
+.DS_Store

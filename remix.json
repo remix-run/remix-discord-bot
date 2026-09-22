@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/remix/schema/remix.json",
+  "test": {
+    "files": ["app/**/*.test.ts"],
+    "exclude": ["node_modules/**", ".coverage/**"],
+    "coverage": {
+      "dir": ".coverage",
+      "include": ["app/**/*.ts"],
+      "exclude": [
+        "app/**/*.test.ts",
+        "app/bot/discord.ts",
+        "app/version.ts"
+      ],
+      "statements": 90,
+      "lines": 90,
+      "branches": 80,
+      "functions": 75
+    }
+  }
+}

@@ -1,53 +1,53 @@
-# Remix Discord Bot
+# Remy
 
-This is the Remix Discord Bot. It's hosted on fly. It runs alongside an actual Remix app (Indie Stack) which we may use to have some kind of UI for controlling the bot and stuff. Who knows. It was just nice to do this so we'll have a persistence layer if we decide we need that.
+Remy handles focused moderation and support workflows for the Remix Discord server. It runs a Discord.js gateway client beside a small Remix 3 HTTP server.
 
-## Development
+## Features
 
-If you're going to be doing much with the bot, I **strongly advise** you take just 10 minutes to setup your own test bot and server for local development.
+| Surface | Behavior |
+|---|---|
+| `/help`, `/info` | Help and deployment information |
+| `:botreport:` | Opens a moderator report thread with a message link |
+| `:botthread:`, `:botthreadask:` | Starts a discussion thread |
+| `:botremixide:`, `:botremixmusic:` | Redirects off-topic posts |
+| `:botreportresume:`, `:botdoublemsg:` | Posts focused moderation guidance |
+| `:bothelp:` | Lists reaction workflows |
+| `GET /`, `GET /healthcheck` | Runtime status and process health |
 
-You'll need to create your own discord server for local development and manual testing (automated testing of Discord bots is extremely difficult and basically not worth it). You'll also need to create your own bot. It should take ~10 minutes max. Create a [discord server](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server-), then follow [the instructions here](https://discordjs.guide/preparations/setting-up-a-bot-application.html) to create a bot application and [add it to your server](https://discordjs.guide/preparations/adding-your-bot-to-servers.html).
+Remy requests only the standard `Guilds`, `GuildMessages`, and `GuildMessageReactions` intents. It does not read message content or request member/presence data.
 
-Once you have that, then copy the `.env.example` to `.env` and put in values for everything (you'll need to create channels for several of them).
+## Requirements
 
-Next run:
+- Node.js 24.3+
+- pnpm 10+
+- A Discord bot and test server
 
-```
-node ./other/deploy-commands.js
-```
+Copy `.env.example` to `.env` and provide the application, guild, channel, role, and bot credentials.
 
-That will configure your server to have the slash-commands our bot expects.
+## Commands
 
-Next, run:
-
-```
-node ./other/deploy-emoji.js
-```
-
-This will update your server with all the emoji reactions the bot has.
-
-Next, run:
-
-```
-cp ./bot/src/playground.example.ts ./bot/src/playground.ts
-```
-
-That has things setup for you to play around to make the bot do whatever you'd like. Once you're ready to commit to something then stick it in the appropriate file in the `bot/src` directory.
-
-If you'd like, you can make your `playground.ts` file (which is gitignored) have this for its contents:
-
-```js
-import ".";
+```sh
+pnpm install
+pnpm dev                 # HTTP server and Discord bot with file watching
+pnpm check               # TypeScript and focused tests
+pnpm test:coverage
+pnpm deploy:commands     # Register guild slash commands immediately
+pnpm deploy:emojis       # Replace the eight bot reaction emojis
 ```
 
-And now it'll just do what the actual bot code does. However you want to develop is fine.
+Slash commands are also synchronized whenever Remy starts. Emoji deployment remains explicit because it deletes and recreates matching guild emojis.
 
-To run the playground file, run:
+Use a separate Discord application and guild for local/manual testing. Automated tests never connect to Discord.
 
-```
-npm run play:bot
-```
+## Structure
 
-This will start the playground file in watch mode. Any change you make will trigger it to be re-run which should make development pretty quick despite no automated tests.
+| Path | Responsibility |
+|---|---|
+| `app/actions` | Remix HTTP controllers |
+| `app/bot/reactions.ts` | Pure reaction plans and execution |
+| `app/bot/discord.ts` | Discord.js event and API adapter |
+| `app/bot/commands.ts` | Slash-command schema and replies |
+| `app/application.ts` | HTTP/bot lifecycle |
+| `scripts` | Explicit Discord setup commands |
 
-If you'd like to run the bot and the Remix app together, run `npm run dev`.
+Production runs from the pinned Node/pnpm Docker image and deploys to Fly after `pnpm check` passes on `main`.
