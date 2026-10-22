@@ -1,4 +1,4 @@
-FROM node:24.15.0-bookworm-slim AS dependencies
+FROM node:24.22.1-bookworm-slim AS dependencies
 
 RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
 WORKDIR /app
@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
-FROM node:24.15.0-bookworm-slim
+FROM node:24.22.1-bookworm-slim
 
 ARG COMMIT_SHA
 
