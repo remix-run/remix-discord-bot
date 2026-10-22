@@ -33,6 +33,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --no-cache --yes --build-arg COMMIT_SHA=${{ github.sha }}
+      - run: flyctl deploy --remote-only --yes --build-arg COMMIT_SHA=${{ github.sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
